@@ -1,0 +1,176 @@
+# Program - 8 and 10
+Step 1: Downlaod the required program 8 folder
+opent the folder in terminal
+create Dockerfile
+
+FROM openjdk:17
+COPY *.jar app.jar
+CMD ["java","-jar","app.jar"]
+
+docker build -t my_prg8:latest .
+
+docker run -itp 8080:8080 my_prg8:latest 
+
+
+then open postman
+
+
+POST: http://localhost:8080/person
+{
+"name": "zaiba",
+"address": "bangalore-560076"
+}
+
+
+GET: http://localhost:8080/person
+{
+"name": "zaiba",
+"address": "bangalore-560076"
+}
+
+
+DELETE: http://localhost:8080/person?name=zaiba
+
+create kuber.yml
+
+```yml
+version: "3.8"
+services:
+ db:
+  image: mysql:latest
+  environment: 
+   DATABASE_PORT: 3306
+   MYSQL_DATABASE: db_mca084
+   MYSQL_ROOT_PASSWORD: mca084
+   MYSQL_USERNAME: mca084
+   MYSQL_PASSWORD: mca084
+  networks:
+   - default
+ app:
+  image: prg9:latest
+  ports:
+  - 8080:8080
+  environment:
+   SPRING_DATASOURCE_URL: jdbc:mysql://172.16.34.43:3306/db_mca084
+   SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+   SPRING_DATASOURCE_USERNAME: mca084
+   SPRING_DATASOURCE_PASSWORD: mca084
+  depends_on: 
+   - db
+  networks:
+   - default
+```
+
+ well cross check with  - application.propertiesof jar with archive manager \
+ 
+ spring.datasource.url = jdbc:mysql://localhost:3306/student
+spring.datasource.driverClassName = com.mysql.cj.jdbc.Driver
+spring.datasource.username = root
+spring.datasource.password = rvce
+spring.jpa.show-sql = true
+spring.jpa.hibernate.ddl-auto = update
+
+minikube start --driver=docker
+
+ minikube delete(if cluster already existed)
+ 
+ then if its deleted then again, minikube start --driver=docker
+ 
+ eval $(minikube docker-env)
+
+Again build image - docker build -t img_10:latest .
+(make chnages in kuber.yml)
+
+if kubectl not present install it - sudo snap install kubectl --classic
+
+kubectl apply -f kuber.yml
+
+minikube service myapp-service
+
+then open postman
+
+POST - http://192.168.49.2:31719/person
+{
+"name": "zaiba",
+"address": "bangalore-560076"
+}
+
+GET - http://192.168.49.2:31719/person
+
+DELETE - http://192.168.49.2:31719/person?name=zaiba
+
+open another terminal and type  - minikube dashboard
+#
+#
+#
+# Program - 9
+Step 1: Downlaod the required program 9 folder
+
+then in the 9th program folder   -
+open the jar file, using open with Archive Manager, then BOOT-INF -> classes -> application.properties
+
+spring.datasource.url = jdbc:mysql://localhost:3306/student
+spring.datasource.driverClassName = com.mysql.cj.jdbc.Driver
+spring.datasource.username = admin
+spring.datasource.password = sql_zaiba
+spring.jpa.show-sql = true
+spring.jpa.hibernate.ddl-auto = update
+
+here change the url to  jdbc:mysql://172.16.34.41:3306/db_mca119, username and password to mca119
+
+opent the folder in terminal
+create Dockerfile
+
+FROM openjdk:17
+COPY *.jar app.jar
+CMD ["java","-jar","app.jar"]
+
+docker build -t my_prg9:latest .
+
+create docker-compose.yml
+
+version: "3.8"
+
+services:
+  db:
+    image: mysql:latest
+    environment: 
+      DATABASE_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: student
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: sql_zaiba
+    networks:
+      - default
+  app:
+    image: my_prg9z1:latest # Replace this with the image name you created
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/student
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: sql_zaiba
+    depends_on: 
+      - db
+    networks:
+      - default
+
+....here too make necessary chnages like username, apssword, link as per your changes made in application.properties
+
+
+docker-compose up
+
+docker compose up -d(in background)
+
+docker-compose down
+
+docker-compose up
+
+
+
+
+
+
+
+

@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+ db:
+  image: mysql:latest
+  environment: 
+   DATABASE_PORT: 3306
+   MYSQL_DATABASE: db_mca084
+   MYSQL_ROOT_PASSWORD: mca084
+   MYSQL_USERNAME: mca084
+   MYSQL_PASSWORD: mca084
+  networks:
+   - default
+ app:
+  image: prg9:latest
+  ports:
+  - 8080:8080
+  environment:
+   SPRING_DATASOURCE_URL: jdbc:mysql://172.16.34.43:3306/db_mca084
+   SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+   SPRING_DATASOURCE_USERNAME: mca084
+   SPRING_DATASOURCE_PASSWORD: mca084
+  depends_on: 
+   - db
+  networks:
+   - default

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hibernate-configuration>
+	
+	<session-factory>
+		
+		<property name="hibernate.connection.url">jdbc:mysql://172.16.34.43:3306/db_mca084</property>
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.connection.username">mca084</property>
+		<property name="hibernate.connection.password">mca084</property>
+		<property name="hibernate.connection.pool_size">10</property>
+		<property name="show-sql">true</property>
+		<property name="hibernate-hbm2ddl.auto">update</property>
+		<mapping resource="student.hbm.xml"/>
+	</session-factory>
+</hibernate-configuration>

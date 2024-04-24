@@ -1,0 +1,173 @@
+To simplify the code and remove unnecessary methods for transactions, you can eliminate the constructor and directly handle transactions within each method. Here's the simplified version:
+
+```java
+package studentDatabase;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
+
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Scanner;
+
+public class Student_Main {
+    private static SessionFactory sessionFactory;
+    private static Session session;
+
+    public static void main(String[] args) {
+        sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+        session = sessionFactory.openSession();
+        Scanner sc = new Scanner(System.in);
+        try {
+            while (true) {
+                System.out.println("\nMenu");
+                System.out.println("1: Insert");
+                System.out.println("2: Delete");
+                System.out.println("3: Search");
+                System.out.println("4: Display");
+                System.out.println("5: Exit");
+                System.out.print("\nEnter the choice: ");
+                try {
+                    int ch = sc.nextInt();
+                    switch (ch) {
+                        case 1:
+                            insert();
+                            break;
+                        case 2:
+                            delete();
+                            break;
+                        case 3:
+                            search();
+                            break;
+                        case 4:
+                            display();
+                            break;
+                        case 5:
+                            System.out.println("\nExiting...");
+                            return;
+                        default:
+                            System.out.println("\nInvalid choice! Please make a valid choice.\n");
+                            break;
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("\nInvalid input. Please enter a number.");
+                    sc.nextLine();
+                }
+            }
+        } finally {
+            sc.close();
+            session.close();
+            sessionFactory.close();
+        }
+    }
+
+    private static void insert() {
+        Transaction transaction = session.beginTransaction();
+        try {
+            System.out.println("\nEnter the Student Details to insert");
+            System.out.print(" - Enter the Student id: ");
+            int id = sc.nextInt();
+            System.out.print(" - Enter the Student usn: ");
+            String usn = sc.next();
+            System.out.print(" - Enter the Student name: ");
+            String name = sc.next();
+            System.out.print(" - Enter the Student address: ");
+            String add = sc.next();
+            System.out.print(" - Enter the Student totalmarks: ");
+            int tm = sc.nextInt();
+
+            Student student = new Student();
+            student.setId(id);
+            student.setUsn(usn);
+            student.setName(name);
+            student.setAddress(add);
+            student.setTotalmarks(tm);
+            session.save(student);
+            transaction.commit();
+            System.out.println("\nStudent inserted successfully.");
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    private static void delete() {
+        Transaction transaction = session.beginTransaction();
+        try {
+            System.out.print("\nEnter student usn to delete: ");
+            String usnDelete = sc.next();
+            Query query = session.createNativeQuery("delete from Student where usn = :usn");
+            query.setParameter("usn", usnDelete);
+            int status = query.executeUpdate();
+            if (status > 0) {
+                System.out.println(usnDelete + " deleted successfully.");
+            } else {
+                System.out.println(usnDelete + " not found.");
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    private static void display() {
+        Transaction transaction = session.beginTransaction();
+        try {
+            Query q = session.createQuery("from Student");
+            List<Student> students = q.getResultList();
+            System.out.println("\nList of Students:");
+            for (Student student : students) {
+                System.out.println("\n Name: " + student.getName());
+                System.out.println(" - USN: " + student.getUsn());
+                System.out.println(" - Address: " + student.getAddress());
+                System.out.println(" - Total Marks: " + student.getTotalmarks());
+                System.out.println();
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    private static void search() {
+        Transaction transaction = session.beginTransaction();
+        try {
+            System.out.print("\nEnter student usn to search: ");
+            String usnSearch = sc.next();
+            Query<Student> query = session.createQuery("from Student where usn = :usn", Student.class);
+            query.setParameter("usn", usnSearch);
+            List<Student> students = query.getResultList();
+            if (students.isEmpty()) {
+                System.out.println("\nStudent with USN " + usnSearch + " not found.");
+            } else {
+                System.out.println("\nStudent Details:");
+                for (Student student : students) {
+                    System.out.println(" Name: " + student.getName());
+                    System.out.println(" - USN: " + student.getUsn());
+                    System.out.println(" - Address: " + student.getAddress());
+                    System.out.println(" - Total Marks: " + student.getTotalmarks());
+                }
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+This version removes the constructor, eliminates the unnecessary `getSession()` method, and handles transactions directly within each method.
